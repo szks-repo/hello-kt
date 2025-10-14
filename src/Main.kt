@@ -20,4 +20,10 @@ fun main() {
 
     val found = repo.findById(order.id)
     println("見つかった注文: $found")
+
+    found?.pay()
+    println(found?.state!!.labelJa())
+
+    found.ship()
+    println(found.state.labelJa())
 }
