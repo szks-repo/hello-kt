@@ -1,24 +1,26 @@
 package domain.order
 
-class Order(
+data class Order<S : OrderState>(
     val id: OrderId,
     val products: List<ProductId>,
     val price: Money,
-    var state: OrderState = OrderState.Pending,
+    val state: S,
 ) {
     fun total(): Money = price
 
-    fun pay() {
-        require(state is OrderState.Pending) {
-            "支払い可能なのはPending状態のみです"
-        }
-        state = OrderState.Paid
-    }
-
-    fun ship() {
-        require(state is OrderState.Paid) {
-            "出荷可能なのはPaid状態のみです"
-        }
-        state = OrderState.Shipped
+    companion object {
+        fun create(
+            id: OrderId,
+            products: List<ProductId>,
+            price: Money
+        ): Order<OrderState.Pending> =
+            Order(id, products, price, OrderState.Pending)
     }
 }
+
+fun Order<OrderState.Pending>.pay(): Order<OrderState.Paid> =
+    Order(id = id, products = products, price = price, state = OrderState.Paid)
+
+// Paid → Shipped
+fun Order<OrderState.Paid>.ship(): Order<OrderState.Shipped> =
+    Order(id = id, products = products, price = price, state = OrderState.Shipped)

@@ -10,7 +10,7 @@ fun main() {
 
     val repo = InMemoryOrderRepository()
 
-    val order = Order(
+    val order = Order.create(
         id = OrderId(),
         products = listOf(ProductId("001"), ProductId("002")),
         price = Money(120000)
@@ -18,12 +18,16 @@ fun main() {
 
     repo.save(order)
 
-    val found = repo.findById(order.id)
-    println("見つかった注文: $found")
+    val pendingOrders: List<Order<OrderState.Pending>> = repo.findAllPending()
+    println(pendingOrders)
 
-    found?.pay()
-    println(found?.state!!.labelJa())
+    for (po in pendingOrders) {
+        println("Pending: ${po.state.labelJa()}")
 
-    found.ship()
-    println(found.state.labelJa())
+        val paid = po.pay()
+        println("Payed ${paid.state.labelJa()}")
+
+        val shipped = paid.ship()
+        println("Shipping ${shipped.state.labelJa()}")
+    }
 }
