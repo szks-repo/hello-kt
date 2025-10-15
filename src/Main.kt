@@ -21,10 +21,10 @@ fun main() {
     val pendingOrders: List<Order<OrderState.Pending>> = repo.findAllPending()
     println(pendingOrders)
 
-    for (po in pendingOrders) {
-        println("Pending: ${po.state.labelJa()}")
+    for (pending in pendingOrders) {
+        println("Pending: ${pending.state.labelJa()}")
 
-        val paid = po.pay()
+        val paid = pending.pay()
         println("Payed ${paid.state.labelJa()}")
 
         val shipped = paid.ship()
